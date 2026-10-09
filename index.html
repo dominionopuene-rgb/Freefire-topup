@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Fire Top-Up</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --accent: #38bdf8;
+      --error: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header { text-align: center; padding: 2rem 1rem; background: var(--card); border-bottom: 1px solid #334155; }
+    header h1 { color: var(--accent); margin-bottom: 0.5rem; }
+    main { flex: 1; max-width: 500px; margin: 0 auto; padding: 2rem 1rem; width: 100%; }
+    form { display: flex; flex-direction: column; gap: 1rem; background: var(--card); padding: 1.5rem; border-radius: 12px; }
+    label { font-weight: 600; font-size: 0.95rem; }
+    input, select { padding: 0.8rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: var(--text); font-size: 1rem; }
+    button { padding: 1rem; background: var(--accent); color: #0f172a; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #message { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; text-align: center; display: none; }
+    #message.error { background: var(--error); display: block; }
+    #message.success { background: #22c55e; color: #0f172a; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔥 Free Fire Diamonds</h1>
+    <p>Instant top-up using your Player ID</p>
+  </header>
+
+  <main>
+    <form id="topupForm">
+      <label for="playerId">Your Free Fire Player ID</label>
+      <input type="text" id="playerId" placeholder="e.g., 123456789" required>
+
+      <label for="package">Select Package</label>
+      <select id="package" required>
+        <option value="">-- Choose a package --</option>
+        <option value="25">25 Diamonds - ₦600</option>
+        <option value="50">50 Diamonds - ₦1,100</option>
+        <option value="115">115 Diamonds - ₦2,200</option>
+        <option value="240">240 Diamonds - ₦4,500</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Proceed to Payment</button>
+    </form>
+    <div id="message"></div>
+  </main>
+
+<script>
+  const form = document.getElementById('topupForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const messageDiv = document.getElementById('message');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    messageDiv.style.display = 'none';
+
+    const playerId = document.getElementById('playerId').value.trim();
+    const packageId = document.getElementById('package').value;
+
+    if (!/^\d{6,12}$/.test(playerId)) {
+      messageDiv.textContent = '❌ Error: Please enter a valid 6-12 digit Player ID.';
+      messageDiv.className = 'error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+
+    try {
+      // We will replace this URL in the next step
+      const response = await fetch('YOUR_VERCEL_URL_HERE/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId, packageId })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        messageDiv.textContent = '✅ Order created successfully!';
+        messageDiv.className = 'success';
+      } else {
+        messageDiv.textContent = '❌ Error: ' + data.error;
+        messageDiv.className = 'error';
+      }
+    } catch (error) {
+      messageDiv.textContent = '❌ Network error. Please try again.';
+      messageDiv.className = 'error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Proceed to Payment';
+    }
+  });
+</script>
+</body>
+  </html>
