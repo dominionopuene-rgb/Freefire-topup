@@ -55,6 +55,7 @@
   </footer>
 
 <script>
+<script>
   const form = document.getElementById('topupForm');
   const submitBtn = document.getElementById('submitBtn');
   const messageDiv = document.getElementById('message');
@@ -62,14 +63,12 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     messageDiv.style.display = 'none';
-    messageDiv.textContent = '';
-    
+
     const playerId = document.getElementById('playerId').value.trim();
     const packageId = document.getElementById('package').value;
 
     if (!/^\d{6,12}$/.test(playerId)) {
-      messageDiv.textContent = '❌ Error: Enter a valid 6-12 digit Player ID.';
-      messageDiv.className = 'error';
+      alert("Please enter a valid 6-12 digit Player ID.");
       return;
     }
 
@@ -77,36 +76,69 @@
     submitBtn.textContent = 'Processing...';
 
     try {
-      // Using the full URL to bypass any routing confusion
+      alert("1. Sending request to Vercel..."); // Test 1
+
       const response = await fetch('https://ip-beta.vercel.app/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, packageId })
       });
 
-      // If the server returns an error (like 404 or 500), catch it
-      if (!response.ok) {
-        throw new Error('Server returned ' + response.status);
-      }
+      alert("2. Vercel responded! Status: " + response.status); // Test 2
 
-      const data = await response.json();
+      const text = await response.text(); // Get the RAW text, not JSON
+      
+      alert("3. Raw response from Vercel:\n\n" + text); // Test 3
 
-      if (data.success) {
-        messageDiv.textContent = '✅ Success! ' + (data.message || 'Order created.');
-        messageDiv.className = 'success';
-      } else {
-        messageDiv.textContent = '❌ Error: ' + data.error;
-        messageDiv.className = 'error';
-      }
     } catch (error) {
-      // This will now ALWAYS show a message if anything fails
-      messageDiv.textContent = '❌ Connection failed: ' + error.message;
-      messageDiv.className = 'error';
+      alert("❌ ERROR: " + error.message); // Test 4
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Proceed to Payment';
     }
   });
-  </script>
+</script><script>
+  const form = document.getElementById('topupForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const messageDiv = document.getElementById('message');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    messageDiv.style.display = 'none';
+
+    const playerId = document.getElementById('playerId').value.trim();
+    const packageId = document.getElementById('package').value;
+
+    if (!/^\d{6,12}$/.test(playerId)) {
+      alert("Please enter a valid 6-12 digit Player ID.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+
+    try {
+      alert("1. Sending request to Vercel..."); // Test 1
+
+      const response = await fetch('https://ip-beta.vercel.app/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId, packageId })
+      });
+
+      alert("2. Vercel responded! Status: " + response.status); // Test 2
+
+      const text = await response.text(); // Get the RAW text, not JSON
+      
+      alert("3. Raw response from Vercel:\n\n" + text); // Test 3
+
+    } catch (error) {
+      alert("❌ ERROR: " + error.message); // Test 4
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Proceed to Payment';
+    }
+  });
+</script>
 </body>
 </html>
