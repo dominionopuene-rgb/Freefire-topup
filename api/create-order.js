@@ -20,30 +20,36 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Using standard fetch instead of axios to avoid dependency issues
-    const response = await fetch('https://api.fzr.cards/api/v2/orders', {
-      method: 'POST',
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        game: 'free-fire',
-        player_id: playerId,
-        product_id: packageId
-      })
-    });
+  // Add an 8-second timeout so it doesn't hang forever
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); 
 
-    const data = await response.json();
-    
-    // Check if FazerCards actually accepted the order
-    if (!response.ok) {
-      return res.status(response.status).json({ success: false, error: data.message || 'FazerCards rejected the request' });
-    }
+  const response = await fetch('https://api.fzr.cards/api/v2/orders', {
+    method: 'POST',
+    headers: {
+      'X-API-Key': apiKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      game: 'free-fire',
+      player_id: playerId,
+      product_id: packageId
+    }),
+    signal: controller.signal
+  });
 
-    return res.status(200).json({ success: true, data });
-    
-  } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+  clearTimeout(timeoutId); // Clear the timeout if it responds in time
+
+  const data = await response.json();
+  
+  if (!response.ok) {
+    return res.status(response.status).json({ success: false, error: data.message || 'FazerCards rejected the request' });
   }
-}
+
+  return res.status(200).json({ success: true, data });
+  
+} catch (error) {
+  // If it timed out, or failed
+  return res.status(500).json({ success: false, error: error.name === 'AbortError' ? 'Request to FazerCards timed out.' : error.message });
+  }
+  
