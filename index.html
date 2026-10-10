@@ -54,7 +54,7 @@
     <p>&copy; 2026 Dominion Opuene. All rights reserved.</p>
   </footer>
 
-<script>
+
 <script>
   const form = document.getElementById('topupForm');
   const submitBtn = document.getElementById('submitBtn');
@@ -81,7 +81,7 @@
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
 
-      const response = await fetch('https://ip-beta.vercel.app/api/create-order', {
+      const response = await fetch('https://freefiretopup-beta.vercel.app/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerId, packageId }),
