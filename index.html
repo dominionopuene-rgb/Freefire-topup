@@ -77,13 +77,17 @@
 
       try {
         // Notice we use /api/create-order because the backend is on the same website!
-        const response = await fetch('https://freefire-topup-beta.vercel.app/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ playerId, packageId })
-        });
+        const response = await fetch('https://freefiretopup-beta.vercel.app/api/create-order', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ playerId, packageId })
+});
 
-        const data = await response.json();
+alert("1. The backend responded!"); // Debug Alert 1
+
+const data = await response.json();
+
+alert("2. The data was parsed! Success: " + data.success); // Debug Alert 2
 
         if (data.success) {
           messageDiv.textContent = '✅ Order created successfully!';
